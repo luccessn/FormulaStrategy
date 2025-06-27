@@ -1,0 +1,17 @@
+{
+  "name": "formulastrategy",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start-server": "cd server && npm start",
+    "start-app": "cd app && npm start",
+    "dev": "concurrently \"npm run start-server\" \"npm run start-app\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
