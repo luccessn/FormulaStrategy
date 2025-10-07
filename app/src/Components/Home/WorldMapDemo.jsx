@@ -16,7 +16,7 @@ export function WorldMapDemo() {
     }
   }, [isInView, hasAnimated]);
   return (
-    <div className="   w-full ">
+    <div className=" relative -top-10   w-full ">
       <WorldMap
         dots={[
           {
@@ -93,8 +93,7 @@ export function WorldMapDemo() {
           },
         ]}
       />
-      <div className="top-shadow absolute left-0 top-12 w-full h-[180px] bg-gradient-to-b from-black to-transparent"></div>
-      <div className="bottom-shadow relative -top-[3em] left-0 -bottom-1 w-full h-[80px] bg-gradient-to-t from-black to-transparent "></div>
+      <div className="top-shadow absolute left-0 top-2 w-full h-[180px] bg-gradient-to-b from-black to-transparent"></div>
 
       <div className="max-w-7xl mx-auto text-center" ref={ref}>
         <p className="font-bold text-xl md:text-4xl dark:text-white text-black">
