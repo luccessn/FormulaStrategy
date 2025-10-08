@@ -71,7 +71,9 @@ export const Home = () => {
         {" "}
         <iframe> </iframe>{" "}
       </div>
-      <WindTunnelDemo />
+      <div className="w-full">
+        <WindTunnelDemo />
+      </div>
     </div>
   );
 };
