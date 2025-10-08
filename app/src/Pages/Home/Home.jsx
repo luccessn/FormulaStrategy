@@ -2,6 +2,7 @@ import React from "react";
 import { WorldMapDemo } from "../../Components/Home/WorldMapDemo";
 import { MapTabsDemo } from "../../Components/Home/MapTabs/MapTabsDemo";
 import { ExpandableCardDemo } from "../../Components/Home/CardDemo";
+import { WindTunnelDemo } from "../../Components/Home/Wind/FullWind";
 
 export const Home = () => {
   return (
@@ -70,6 +71,7 @@ export const Home = () => {
         {" "}
         <iframe> </iframe>{" "}
       </div>
+      <WindTunnelDemo />
     </div>
   );
 };

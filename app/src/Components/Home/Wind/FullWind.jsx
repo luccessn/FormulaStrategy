@@ -1,18 +1,18 @@
-import React, { Suspense, useState } from "react";
+import React, { Suspense, useState, useEffect } from "react";
 import { createRoot } from "react-dom/client";
 import { Canvas } from "@react-three/fiber";
 import {
   OrbitControls,
   Environment,
-  useGLTF,
   Html,
+  useGLTF,
   useProgress,
+  useAnimations,
 } from "@react-three/drei";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
-import "./styles.css";
-
-// Loader component
+import tunel from "./models/tunel.glb"; import f1senna from "./models/f1_senna.glb"
+// Loader (loading progress overlay)
 function Loader() {
   const { progress } = useProgress();
   return (
@@ -22,9 +22,18 @@ function Loader() {
   );
 }
 
-// Model loader
+// Model loader with animation support
 function Model({ url, scale, position, rotation }) {
-  const { scene } = useGLTF(url);
+  const gltf = useGLTF(url);
+  const { scene, animations } = gltf;
+  const { actions } = useAnimations(animations, scene);
+
+  useEffect(() => {
+    if (actions) {
+      Object.values(actions).forEach((action) => action.play());
+    }
+  }, [actions]);
+
   return (
     <primitive
       object={scene}
@@ -35,28 +44,17 @@ function Model({ url, scale, position, rotation }) {
   );
 }
 
-function WindTunnelDemo() {
+export function WindTunnelDemo() {
   const [carIndex, setCarIndex] = useState(0);
 
   const cars = [
     {
-      name: "Formula 1",
-      url: "/models/f1_car.glb",
-      scale: [0.8, 0.8, 0.8],
+      name: "Formula 1 - Senna",
+      url: f1senna,
+      scale: [2, 2, 2], // გაძლიერებული ზომა
       position: [0, -0.9, 0],
     },
-    {
-      name: "GT3 Car",
-      url: "/models/gt3_car.glb",
-      scale: [0.8, 0.8, 0.8],
-      position: [0, -0.9, 0],
-    },
-    {
-      name: "Lamborghini",
-      url: "/models/lamborghini.glb",
-      scale: [0.8, 0.8, 0.8],
-      position: [0, -0.9, 0],
-    },
+    // მეტი მანქანა შეგიძლია დაამატო
   ];
 
   return (
@@ -73,7 +71,7 @@ function WindTunnelDemo() {
       </header>
 
       <div style={{ display: "flex", height: "calc(100% - 64px)" }}>
-        {/* Left Panel - Swiper */}
+        {/* Sidebar with car options */}
         <div
           style={{
             width: 320,
@@ -94,7 +92,7 @@ function WindTunnelDemo() {
                 <div style={{ padding: 12 }}>
                   <h3 style={{ marginTop: 0 }}>{car.name}</h3>
                   <p style={{ marginBottom: 8 }}>
-                    Click or swipe to select this car in the tunnel.
+                    Select this car to place it inside the wind tunnel.
                   </p>
                 </div>
               </SwiperSlide>
@@ -102,19 +100,21 @@ function WindTunnelDemo() {
           </Swiper>
         </div>
 
-        {/* Right Panel - 3D Canvas */}
+        {/* 3D Canvas */}
         <div style={{ flex: 1 }}>
-          <Canvas camera={{ position: [0, 1.8, 6], fov: 45 }}>
+<Canvas camera={{ position: [-30, 20, 10], fov: 90 }}>
             <ambientLight intensity={0.6} />
             <directionalLight position={[10, 10, 5]} intensity={1} />
 
             <Suspense fallback={<Loader />}>
+              {/* Tunnel */}
               <Model
-                url="/models/wind_tunnel.glb"
+                url={tunel}
                 scale={[1, 1, 1]}
                 position={[0, -1.2, 0]}
               />
 
+              {/* Selected Car */}
               <Model
                 key={cars[carIndex].name}
                 url={cars[carIndex].url}
@@ -125,7 +125,13 @@ function WindTunnelDemo() {
               <Environment preset="studio" />
             </Suspense>
 
-            <OrbitControls target={[0, -0.6, 0]} />
+            {/* Static Camera Controls */}
+            <OrbitControls
+              target={[0, -0.6, 0]}
+              enableRotate={false}
+              enableZoom={false}
+              enablePan={false}
+            />
           </Canvas>
         </div>
       </div>
@@ -138,15 +144,8 @@ function WindTunnelDemo() {
           color: "rgba(255,255,255,0.7)",
         }}
       >
-        Models: place your .glb files under <code>/public/models/</code>
+        Place your .glb files in <code>/public/models/</code>
       </footer>
     </div>
   );
-}
-
-// Mount app
-const container = document.getElementById("root");
-if (container) {
-  const root = createRoot(container);
-  root.render(<WindTunnelDemo />);
 }
