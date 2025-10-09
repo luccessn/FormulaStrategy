@@ -8,6 +8,7 @@ import {
   useProgress,
   useAnimations,
 } from "@react-three/drei";
+import * as THREE from "three";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import tunel from "./models/tunel.glb";
@@ -15,6 +16,7 @@ import f1senna from "./models/f1_senna.glb";
 import vento from "./models/vento.glb";
 import vento2 from "./models/vento2.glb";
 import vento3 from "./models/vento3.glb";
+import main from "./models/main4.glb";
 
 // Loader (loading progress overlay)
 function Loader() {
@@ -26,7 +28,7 @@ function Loader() {
   );
 }
 
-// Model loader with animation support
+// Model loader with material + animation support
 function Model({ url, scale, position, rotation }) {
   const gltf = useGLTF(url);
   const { scene, animations } = gltf;
@@ -36,7 +38,27 @@ function Model({ url, scale, position, rotation }) {
     if (actions) {
       Object.values(actions).forEach((action) => action.play());
     }
-  }, [actions]);
+
+    scene.traverse((child) => {
+      if (child.isMesh) {
+        child.castShadow = true;
+        child.receiveShadow = true;
+
+        if (child.material) {
+          // სწორად გამოჩნდეს ფერები
+          if (child.material.map) {
+            child.material.map.encoding = THREE.sRGBEncoding;
+          }
+          if (child.material.emissiveMap) {
+            child.material.emissiveMap.encoding = THREE.sRGBEncoding;
+          }
+
+          // მეტალიკი უკეთ გამოჩნდეს
+          child.material.envMapIntensity = 1.5;
+        }
+      }
+    });
+  }, [actions, scene]);
 
   return (
     <primitive
@@ -55,33 +77,44 @@ export function WindTunnelDemo() {
     {
       name: "Formula 1 - Senna",
       url: f1senna,
-      scale: [8, 8, 8],
+      scale: [5, 4, 4],
       position: [0, -0.9, 15],
-      rotation: [0, Math.PI, 0], // 180° შებრუნება Y ღერძზე
+      rotation: [0, Math.PI, 0],
     },
-    // სხვა მანქანებიც შეგიძლია დაამატო აქ
+    // აქ შეგიძლია დაამატო სხვა მანქანები
   ];
 
   return (
     <div
       style={{
-        width: "100vw",
-        height: "100vh",
+        width: "70vw",
+        height: "70vw",
         color: "#fff",
         display: "flex",
-        flexDirection: "column", // ყველაფერი ვერტიკალურად
+        flexDirection: "column",
       }}
-      // className="bg-gray-500"
     >
       {/* 3D Canvas */}
       <div style={{ flex: 1 }}>
-        <Canvas camera={{ position: [-40, 15, 0], fov: 90 }}>
-          <ambientLight intensity={0.6} />
-          <directionalLight position={[10, 10, 5]} intensity={1} />
-
+        <Canvas
+          shadows
+          dpr={[1, 2]}
+          gl={{
+            antialias: true,
+            physicallyCorrectLights: true,
+            // outputEncoding: THREE.sRGBEncoding,
+            // toneMapping: THREE.ACESFilmicToneMapping,
+            toneMappingExposure: 1,
+          }}
+          camera={{ position: [-55, 20, 0], fov: 60 }}
+        >
           <Suspense fallback={<Loader />}>
             {/* Tunnel */}
-            <Model url={vento} scale={[1, 1, 1]} position={[0, -1.2, 10]} />
+            <Model
+              url={main}
+              scale={[0.5, 0.5, 0.5]}
+              position={[0, -1.2, 10]}
+            />
 
             {/* Selected Car */}
             <Model
@@ -92,7 +125,24 @@ export function WindTunnelDemo() {
               rotation={cars[carIndex].rotation}
             />
 
-            <Environment preset="studio" />
+            {/* Lights */}
+            <ambientLight intensity={0.3} />
+            <directionalLight
+              castShadow
+              position={[5, 10, 5]}
+              intensity={1.2}
+              shadow-mapSize-width={2048}
+              shadow-mapSize-height={2048}
+            />
+            <spotLight
+              castShadow
+              position={[-5, 8, -5]}
+              intensity={0.8}
+              angle={0.3}
+            />
+
+            {/* HDRI Env */}
+            <Environment preset="sunset" background={false} />
           </Suspense>
 
           {/* Static Camera Controls */}
