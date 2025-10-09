@@ -13,10 +13,13 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import tunel from "./models/tunel.glb";
 import f1senna from "./models/f1_senna.glb";
+import nissan from "./models/nissan.glb";
+import pors from "./models/pors.glb";
+
 import vento from "./models/vento.glb";
 import vento2 from "./models/vento2.glb";
 import vento3 from "./models/vento3.glb";
-import main from "./models/main4.glb";
+import main from "./models/main2.glb";
 
 // Loader (loading progress overlay)
 function Loader() {
@@ -47,12 +50,11 @@ function Model({ url, scale, position, rotation }) {
         if (child.material) {
           // სწორად გამოჩნდეს ფერები
           if (child.material.map) {
-            child.material.map.encoding = THREE.sRGBEncoding;
+            child.material.map.colorSpace = THREE.SRGBColorSpace;
           }
           if (child.material.emissiveMap) {
-            child.material.emissiveMap.encoding = THREE.sRGBEncoding;
+            child.material.emissiveMap.colorSpace = THREE.SRGBColorSpace;
           }
-
           // მეტალიკი უკეთ გამოჩნდეს
           child.material.envMapIntensity = 1.5;
         }
@@ -81,18 +83,27 @@ export function WindTunnelDemo() {
       position: [0, -0.9, 15],
       rotation: [0, Math.PI, 0],
     },
+    {
+      name: "pors",
+      url: pors,
+      scale: [8, 6, 6],
+      position: [0, -0.9, 15],
+      rotation: [0, Math.PI, 0],
+    },
+
     // აქ შეგიძლია დაამატო სხვა მანქანები
   ];
 
   return (
     <div
       style={{
-        width: "70vw",
-        height: "70vw",
+        width: "1500px",
+        height: "1000px",
         color: "#fff",
         display: "flex",
         flexDirection: "column",
       }}
+      // className="bg-red-500"
     >
       {/* 3D Canvas */}
       <div style={{ flex: 1 }}>
@@ -102,11 +113,10 @@ export function WindTunnelDemo() {
           gl={{
             antialias: true,
             physicallyCorrectLights: true,
-            // outputEncoding: THREE.sRGBEncoding,
-            // toneMapping: THREE.ACESFilmicToneMapping,
+            outputColorSpace: THREE.SRGBColorSpace, // toneMapping: THREE.ACESFilmicToneMapping,
             toneMappingExposure: 1,
           }}
-          camera={{ position: [-55, 20, 0], fov: 60 }}
+          camera={{ position: [-55, 20, 5], fov: 45 }}
         >
           <Suspense fallback={<Loader />}>
             {/* Tunnel */}
@@ -168,7 +178,6 @@ export function WindTunnelDemo() {
           direction="horizontal"
           spaceBetween={12}
           slidesPerView={2}
-          onSlideChange={(swiper) => setCarIndex(swiper.activeIndex)}
           style={{ height: "100%" }}
         >
           {cars.map((car, i) => (
@@ -179,7 +188,9 @@ export function WindTunnelDemo() {
                   background: "rgba(255,255,255,0.1)",
                   borderRadius: 8,
                   textAlign: "center",
+                  cursor: "pointer", // ხელის კურსორი
                 }}
+                onClick={() => setCarIndex(i)} // 👈 აი აქ ხდება მანქანის შეცვლა
               >
                 <h3 style={{ margin: 0, fontSize: 14 }}>{car.name}</h3>
                 <p style={{ margin: 0, fontSize: 12, opacity: 0.7 }}>
