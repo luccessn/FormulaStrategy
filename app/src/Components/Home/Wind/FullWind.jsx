@@ -19,7 +19,7 @@ import pors from "./models/pors.glb";
 import vento from "./models/vento.glb";
 import vento2 from "./models/vento2.glb";
 import vento3 from "./models/vento3.glb";
-import main from "./models/main2.glb";
+import main from "./models/vnt1.glb";
 
 // Loader (loading progress overlay)
 function Loader() {
@@ -79,8 +79,8 @@ export function WindTunnelDemo() {
     {
       name: "Formula 1 - Senna",
       url: f1senna,
-      scale: [5, 4, 4],
-      position: [0, -0.9, 15],
+      scale: [4, 3, 3],
+      position: [0, -0.9, -2],
       rotation: [0, Math.PI, 0],
     },
     {
@@ -116,14 +116,14 @@ export function WindTunnelDemo() {
             outputColorSpace: THREE.SRGBColorSpace, // toneMapping: THREE.ACESFilmicToneMapping,
             toneMappingExposure: 1,
           }}
-          camera={{ position: [-55, 20, 5], fov: 45 }}
+          camera={{ position: [-55, 20, 0], fov: 45 }}
         >
           <Suspense fallback={<Loader />}>
             {/* Tunnel */}
             <Model
               url={main}
-              scale={[0.5, 0.5, 0.5]}
-              position={[0, -1.2, 10]}
+              scale={[0.35, 0.35, 0.35]}
+              position={[0, -1.2, -5]}
             />
 
             {/* Selected Car */}
